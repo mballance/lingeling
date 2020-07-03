@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*/
-/* Copyright 2010-2018 Armin Biere Johannes Kepler University Linz Austria */
+/* Copyright 2010-2020 Armin Biere Johannes Kepler University Linz Austria */
 /*-------------------------------------------------------------------------*/
 
 #ifdef NDEBUG
@@ -406,6 +406,7 @@ static void prt (int final) {
     fputc ('\r', stdout);
   }
   msg ("written %s with %d events", oname, prevents);
+  (void) final;
 }
 
 static void dd (void) {
@@ -771,7 +772,7 @@ NEXT:
   if (ch == EOF) goto DONE;
   if (ch == '\r') goto NEXT;
   if (ch != '\n') {
-    if (len + 1 >= sizeof (buffer)) perr ("line buffer exceeded");
+    if (len + 1 >= (int) sizeof (buffer)) perr ("line buffer exceeded");
     buffer[len++] = ch;
     buffer[len] = 0;
     goto NEXT;

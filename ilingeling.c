@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*/
-/* Copyright 2010-2018 Armin Biere Johannes Kepler University Linz Austria */
+/* Copyright 2010-2020 Armin Biere Johannes Kepler University Linz Austria */
 /*-------------------------------------------------------------------------*/
 
 #include "lglib.h"
@@ -109,7 +109,7 @@ static signed char * vals;
 static int nlits, szlits;
 static int * lits;
 
-static int verbose, bar, nowitness, plain, _clone, deterministic;
+static int verbose, bar, nowitness, plain, doclone, deterministic;
 static int noreverse, addassumptions = 1, noflush, reduce, nomelt;
 
 static const char * druptraceprefix;
@@ -202,7 +202,7 @@ static int term (void * voidptr) {
 
 static void progress (int pmille, int total, int max, double avg, int nl) {
   int ch, i, lim, eta;
-  char fmt[10];
+  char fmt[16];
   double rem;
   msglock (0);
   if (isatty (1)) fputc ('\r', stdout);
@@ -290,13 +290,13 @@ static int sat (Worker * w) {
   int res;
   char name[100];
   LGL * cloned;
-  if (!druptraceprefix && _clone) lglsetopt (w->lgl, "clim", CLONELIMIT);
+  if (!druptraceprefix && doclone) lglsetopt (w->lgl, "clim", CLONELIMIT);
   else lglsetopt (w->lgl, "clim", -1),
        lglsetopt (w->lgl, "plim", -1),
        lglsetopt (w->lgl, "dlim", -1);
   if (!noflush) lglflushcache (w->lgl);
   res = lglsat (w->lgl);
-  assert (!druptraceprefix || !_clone || res);
+  assert (!druptraceprefix || !doclone || res);
   if (!res && !justreturn (w)) {
     msg (w, 1, "cloning after %d conflicts", CLONELIMIT);
     cloned = lglclone (w->lgl);
@@ -890,7 +890,7 @@ int main (int argc, char ** argv) {
       if (histfilename) die ("two '-t' options");
       if (++i == argc) die ("argument to '-t' missing");
       histfilename = argv[i];
-    } else if (!strcmp (argv[i], "--_clone")) _clone = 1;
+    } else if (!strcmp (argv[i], "--clone")) doclone = 1;
     else if (!strcmp (argv[i], "--no-flush")) noflush = 1;
     else if (!strcmp (argv[i], "-d") || !strcmp (argv[i], "--drup")) {
       if (++i == argc) die ("argument to '%s' missing", argv[i]);
