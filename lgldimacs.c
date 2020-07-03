@@ -6,7 +6,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <limits.h>
 
 struct LDR {
@@ -71,7 +73,9 @@ static char * ldrstrdup (LDR * ldr, const char* str) {
 void ldrelease (LDR * ldr) {
   if (ldr->file) {
     if (ldr->closefile == 1) fclose (ldr->file);
+#ifndef _WIN32
     if (ldr->closefile == 2) pclose (ldr->file);
+#endif
   }
   ldrdelstr (ldr, ldr->errmsg);
   ldrdelstr (ldr, ldr->path);
@@ -119,6 +123,7 @@ static int ldrhas (const char * str, const char * suffix) {
 }
 
 static FILE * ldrcmd (LDR * ldr, const char * fmt, const char * name) {
+#ifndef _WIN32
   FILE * res;
   int len = strlen (fmt) + strlen (name) + 1;
   char * s = ldr->mem.alloc (ldr->mem.state, len);
@@ -126,6 +131,10 @@ static FILE * ldrcmd (LDR * ldr, const char * fmt, const char * name) {
   res = popen (s, "r");
   ldr->mem.dealloc (ldr->mem.state, s, len);
   return res;
+#else
+  // TODO
+  return 0;
+#endif
 }
 
 void ldrsetpath (LDR * ldr, const char * path) {

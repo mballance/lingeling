@@ -4,7 +4,12 @@
 
 #include "lglib.h"
 #include "lglcfg.h"
+#ifndef _WIN32
 #include "lglcflags.h"
+#else
+#define LGL_CC "cl"
+#define LGL_CFLAGS "<default>"
+#endif
 
 #include <stdio.h>
 #include <string.h>

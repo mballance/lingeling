@@ -7,6 +7,13 @@
 
 #include <stdio.h>				// for 'FILE'
 #include <stdlib.h>				// for 'int64_t'
+#include <stdint.h>
+
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 //--------------------------------------------------------------------------
 
@@ -20,8 +27,8 @@ typedef struct LGL LGL;
 
 //--------------------------------------------------------------------------
 
-LGL * lglinit (void);				// constructor
-void lglrelease (LGL *);			// destructor
+EXPORT LGL * lglinit (void);				// constructor
+EXPORT void lglrelease (LGL *);			// destructor
 
 // externally provided memory manager ...
 
@@ -29,14 +36,14 @@ typedef void * (*lglalloc) (void*mem, size_t);
 typedef void (*lgldealloc) (void*mem, void*, size_t);
 typedef void * (*lglrealloc) (void*mem, void *ptr, size_t old, size_t);
 
-LGL * lglminit (void *mem, lglalloc, lglrealloc, lgldealloc);
+EXPORT LGL * lglminit (void *mem, lglalloc, lglrealloc, lgldealloc);
 
 // 'Cloning' produces identicaly behaving solvers.
 
-LGL * lglclone (LGL *);
-LGL * lglmclone (LGL *, void *mem, lglalloc, lglrealloc, lgldealloc);
+EXPORT LGL * lglclone (LGL *);
+EXPORT LGL * lglmclone (LGL *, void *mem, lglalloc, lglrealloc, lgldealloc);
 
-int lglunclone (LGL * dst, LGL * src);		// does not release 'src'
+EXPORT int lglunclone (LGL * dst, LGL * src);		// does not release 'src'
 
 // 'Forking' copies only irredundant clauses and also uses internal variable
 // indices of the parent as external variable indices.  Thus 'parent' and
@@ -54,8 +61,8 @@ int lglunclone (LGL * dst, LGL * src);		// does not release 'src'
 // the parent. Options, prefix, output file and the callbacks for 'getime'
 // and 'onabort' are copied too (if set).
 
-LGL * lglfork (LGL * parent);
-int lgljoin (LGL * parent, LGL * child);	// does not release 'child'
+EXPORT LGL * lglfork (LGL * parent);
+EXPORT int lgljoin (LGL * parent, LGL * child);	// does not release 'child'
 
 // Both 'Cloning' and 'Forking' can be used to implement 'Push & Pop', but
 // the asymmetric forking is more similar to the classical way of
@@ -71,54 +78,54 @@ int lgljoin (LGL * parent, LGL * child);	// does not release 'child'
 
 //--------------------------------------------------------------------------
 
-const char * lglparsefile (LGL *, FILE *, int force,
+EXPORT const char * lglparsefile (LGL *, FILE *, int force,
                            int * lineno_ptr, int * max_var_ptr);
 
-const char * lglparsepath (LGL *, const char * path, int force,
+EXPORT const char * lglparsepath (LGL *, const char * path, int force,
                            int * lineno_ptr, int * max_var_ptr);
 
 //--------------------------------------------------------------------------
 
-const char * lglversion ();
+EXPORT const char * lglversion ();
 
-void lglbnr (const char * name,
+EXPORT void lglbnr (const char * name,
              const char * prefix,
 	     FILE * file);			// ... banner
 
-void lglusage (LGL *);				// print usage "-h"
-void lglopts (LGL *, const char * prefix, int);	// ... defaults "-d" | "-e"
-void lglrgopts (LGL *);				// ... option ranges "-r"
-void lglpcs (LGL *, int mixed);			// ... PCS file
-void lglsizes (LGL *);				// ... data structure sizes
+EXPORT void lglusage (LGL *);				// print usage "-h"
+EXPORT void lglopts (LGL *, const char * prefix, int);	// ... defaults "-d" | "-e"
+EXPORT void lglrgopts (LGL *);				// ... option ranges "-r"
+EXPORT void lglpcs (LGL *, int mixed);			// ... PCS file
+EXPORT void lglsizes (LGL *);				// ... data structure sizes
 
 //--------------------------------------------------------------------------
 // setters and getters for options
 
-void lglsetout (LGL *, FILE*);			// output file for report
-void lglsetrace (LGL *, FILE*);			// set trace output file
-void lglsetprefix (LGL *, const char*);		// prefix for messages
+EXPORT void lglsetout (LGL *, FILE*);			// output file for report
+EXPORT void lglsetrace (LGL *, FILE*);			// set trace output file
+EXPORT void lglsetprefix (LGL *, const char*);		// prefix for messages
 
-FILE * lglgetout (LGL *);
-const char * lglgetprefix (LGL *);
+EXPORT FILE * lglgetout (LGL *);
+EXPORT const char * lglgetprefix (LGL *);
 
-void lglsetopt (LGL *, const char *, int);	// set option value
-int lglreadopts (LGL *, FILE *);		// read and set options
-int lglgetopt (LGL *, const char *);		// get option value
-int lgldefopt (LGL *, const char *);		// get default value
-int lglhasopt (LGL *, const char *);		// exists option?
+EXPORT void lglsetopt (LGL *, const char *, int);	// set option value
+EXPORT int lglreadopts (LGL *, FILE *);		// read and set options
+EXPORT int lglgetopt (LGL *, const char *);		// get option value
+EXPORT int lgldefopt (LGL *, const char *);		// get default value
+EXPORT int lglhasopt (LGL *, const char *);		// exists option?
 
-int lglgetoptminmax (LGL *, const char *, int * minptr, int * maxptr);
+EXPORT int lglgetoptminmax (LGL *, const char *, int * minptr, int * maxptr);
 
-void * lglfirstopt (LGL *);			// option iterator: first
+EXPORT void * lglfirstopt (LGL *);			// option iterator: first
 
-void * lglnextopt (LGL *, 			// option iterator: next
+EXPORT void * lglnextopt (LGL *, 			// option iterator: next
                    void * iterator, 
                    const char ** nameptr,
 		   int *valptr, int *minptr, int *maxptr);
 
 // individual ids for logging and statistics:
 
-void lglsetid (LGL *, int tid, int tids);
+EXPORT void lglsetid (LGL *, int tid, int tids);
 
 // Set default phase of a literal.  Any decision on this literal will always
 // try this phase.  Note, that this function does not have any effect on
@@ -126,83 +133,83 @@ void lglsetid (LGL *, int tid, int tids);
 // phase and thus if they are set to different default phases, only the last
 // set operation will be kept.
 
-void lglsetphase (LGL *, int lit);
-void lglresetphase (LGL *, int lit);	// Stop forcing phase in decisions.
+EXPORT void lglsetphase (LGL *, int lit);
+EXPORT void lglresetphase (LGL *, int lit);	// Stop forcing phase in decisions.
 
 // Prefer decisions on 'important' variables.
 
-void lglsetimportant (LGL *, int lit);
+EXPORT void lglsetimportant (LGL *, int lit);
 
 // Assume the solver is in the SATISFIABLE state (after 'lglsat' or
 // 'lglsimp'), then calling 'lglsetphases' will copy the current assignment
 // as default phases.
 
-void lglsetphases (LGL *);
+EXPORT void lglsetphases (LGL *);
 
 //--------------------------------------------------------------------------
 // call back for abort
 
-void lglonabort (LGL *, void * state, void (*callback)(void* state));
+EXPORT void lglonabort (LGL *, void * state, void (*callback)(void* state));
 
 //--------------------------------------------------------------------------
 // write and read API trace
 
-void lglwtrapi (LGL *, FILE *);
-void lglrtrapi (LGL *, FILE *);
+EXPORT void lglwtrapi (LGL *, FILE *);
+EXPORT void lglrtrapi (LGL *, FILE *);
 
 //--------------------------------------------------------------------------
 // traverse units, equivalences, remaining clauses, or all clauses:
 
-void lglutrav (LGL *, void * state, void (*trav)(void *, int unit));
-void lgletrav (LGL *, void * state, void (*trav)(void *, int lit, int repr));
-void lglctrav (LGL *, void * state, void (*trav)(void *, int lit));
-void lgltravall (LGL *, void * state, void (*trav)(void *state, int lit));
+EXPORT void lglutrav (LGL *, void * state, void (*trav)(void *, int unit));
+EXPORT void lgletrav (LGL *, void * state, void (*trav)(void *, int lit, int repr));
+EXPORT void lglctrav (LGL *, void * state, void (*trav)(void *, int lit));
+EXPORT void lgltravall (LGL *, void * state, void (*trav)(void *state, int lit));
 
 //--------------------------------------------------------------------------
 
-void lglprint (LGL *, FILE *);			// remaining in DIMACS format
-void lglprintall (LGL *, FILE *);		// including units & equivs
+EXPORT void lglprint (LGL *, FILE *);			// remaining in DIMACS format
+EXPORT void lglprintall (LGL *, FILE *);		// including units & equivs
 
 //--------------------------------------------------------------------------
 // main interface as in PicoSAT (see 'picosat.h' for more information)
 
-int lglmaxvar (LGL *);
-int lglincvar (LGL *);
+EXPORT int lglmaxvar (LGL *);
+EXPORT int lglincvar (LGL *);
 
-void lgladd (LGL *, int lit);
-void lglassume (LGL *, int lit);		// assume single units
+EXPORT void lgladd (LGL *, int lit);
+EXPORT void lglassume (LGL *, int lit);		// assume single units
 
-void lglcassume (LGL *, int lit);		// assume clause
+EXPORT void lglcassume (LGL *, int lit);		// assume clause
 						// (at most one)
 
-void lglfixate (LGL *);				// add assumptions as units
+EXPORT void lglfixate (LGL *);				// add assumptions as units
 
-int lglsat (LGL *);
-int lglsimp (LGL *, int iterations);
+EXPORT int lglsat (LGL *);
+EXPORT int lglsimp (LGL *, int iterations);
 
-int lglderef (LGL *, int lit);			// neg=false, pos=true
-int lglfixed (LGL *, int lit);			// ditto but toplevel
+EXPORT int lglderef (LGL *, int lit);			// neg=false, pos=true
+EXPORT int lglfixed (LGL *, int lit);			// ditto but toplevel
 
-int lglfailed (LGL *, int lit);			// ditto for assumptions
-int lglinconsistent (LGL *);			// contains empty clause?
-int lglchanged (LGL *);				// model changed
+EXPORT int lglfailed (LGL *, int lit);			// ditto for assumptions
+EXPORT int lglinconsistent (LGL *);			// contains empty clause?
+EXPORT int lglchanged (LGL *);				// model changed
 
-void lglreducecache (LGL *);			// reset cache size
-void lglflushcache (LGL *);			// flush all learned clauses
+EXPORT void lglreducecache (LGL *);			// reset cache size
+EXPORT void lglflushcache (LGL *);			// flush all learned clauses
 
 /*------------------------------------------------------------------------*/
 
 /* Return representative from equivalence class if literal is not top-level
  * assigned nor eliminated.
  */
-int lglrepr (LGL *, int lit);
+EXPORT int lglrepr (LGL *, int lit);
 
 /* Set 'startptr' and 'toptr' to the 'start' and 'top' of the reconstruction
  * stack, which is used in BCE, BVE and CCE for reconstructing a solution
  * after eliminating variables or clauses.  These pointers are only valid
  * until the next 'lglsat/lglsimp' call.
  */
-void lglreconstk (LGL * lgl, int ** startptr, int ** toptr);
+EXPORT void lglreconstk (LGL * lgl, int ** startptr, int ** toptr);
 
 //--------------------------------------------------------------------------
 // Incremental interface provides reference counting for indices, i.e.
@@ -225,7 +232,7 @@ void lglreconstk (LGL * lgl, int ** startptr, int ** toptr);
 
 #include <assert.h>
 
-int main () {
+EXPORT int main () {
   LGL * lgl = lglinit ();
   int res;
   lgladd (lgl, -14); lgladd (lgl, 2); lgladd (lgl, 0);  // binary clause
@@ -286,19 +293,19 @@ int main () {
 
 ****** end of incremental example ****************************************/
 
-void lglfreeze (LGL *, int lit);
-int lglfrozen (LGL *, int lit);
+EXPORT void lglfreeze (LGL *, int lit);
+EXPORT int lglfrozen (LGL *, int lit);
 
-void lglmelt (LGL *, int lit);
-void lglmeltall (LGL *);				// melt all literals
+EXPORT void lglmelt (LGL *, int lit);
+EXPORT void lglmeltall (LGL *);				// melt all literals
 
 // If a literal was not frozen at the last call to 'lglsat' (or 'lglsimp')
 // it becomes 'unusable' after the next call even though it might not
 // have been used as blocking literal etc.  This
 
-int lglusable (LGL *, int lit);
-int lglreusable (LGL *, int lit);
-void lglreuse (LGL *, int lit);
+EXPORT int lglusable (LGL *, int lit);
+EXPORT int lglreusable (LGL *, int lit);
+EXPORT void lglreuse (LGL *, int lit);
 
 //--------------------------------------------------------------------------
 // Returns a good look ahead literal or zero if all potential literals have
@@ -308,42 +315,42 @@ void lglreuse (LGL *, int lit);
 // if it was not frozen during a previous SAT call and thus implicitly
 // became melted.  Therefore it can be added in a unit clause.
 
-int lglookahead (LGL *);
+EXPORT int lglookahead (LGL *);
 
 //--------------------------------------------------------------------------
 // stats:
 
-void lglflushtimers (LGL *lgl);			// after interrupt etc.
+EXPORT void lglflushtimers (LGL *lgl);			// after interrupt etc.
 
-void lglstats (LGL *);
-int64_t lglgetconfs (LGL *);
-int64_t lglgetdecs (LGL *);
-int64_t lglgetprops (LGL *);
-size_t lglbytes (LGL *);
-int lglnvars (LGL *);
-int lglnclauses (LGL *);
-double lglmb (LGL *);
-double lglmaxmb (LGL *);
-double lglsec (LGL *);
-double lglprocesstime (void);
+EXPORT void lglstats (LGL *);
+EXPORT int64_t lglgetconfs (LGL *);
+EXPORT int64_t lglgetdecs (LGL *);
+EXPORT int64_t lglgetprops (LGL *);
+EXPORT size_t lglbytes (LGL *);
+EXPORT int lglnvars (LGL *);
+EXPORT int lglnclauses (LGL *);
+EXPORT double lglmb (LGL *);
+EXPORT double lglmaxmb (LGL *);
+EXPORT double lglsec (LGL *);
+EXPORT double lglprocesstime (void);
 
 //--------------------------------------------------------------------------
 // low-level parallel support through call backs
 
-void lglseterm (LGL *, int (*term)(void*), void*);
+EXPORT void lglseterm (LGL *, int (*term)(void*), void*);
 
-void lglsetproduceunit (LGL *, void (*produce)(void*, int), void*);
-void lglsetconsumeunits (LGL *, void (*consume)(void*,int**,int**), void*);
-void lglsetconsumedunits (LGL *, void (*consumed)(void*,int), void*);
+EXPORT void lglsetproduceunit (LGL *, void (*produce)(void*, int), void*);
+EXPORT void lglsetconsumeunits (LGL *, void (*consume)(void*,int**,int**), void*);
+EXPORT void lglsetconsumedunits (LGL *, void (*consumed)(void*,int), void*);
 
-void lglsetproducecls (LGL*, void(*produce)(void*,int*,int glue),void*);
-void lglsetconsumecls (LGL*,void(*consume)(void*,int**,int *glueptr),void*);
-void lglsetconsumedcls (LGL *, void (*consumed)(void*,int), void*);
+EXPORT void lglsetproducecls (LGL*, void(*produce)(void*,int*,int glue),void*);
+EXPORT void lglsetconsumecls (LGL*,void(*consume)(void*,int**,int *glueptr),void*);
+EXPORT void lglsetconsumedcls (LGL *, void (*consumed)(void*,int), void*);
 
-void lglsetlockeq (LGL *, int * (*lock)(void*), void *);
-void lglsetunlockeq (LGL *, void (*unlock)(void*,int cons,int prod), void *);
+EXPORT void lglsetlockeq (LGL *, int * (*lock)(void*), void *);
+EXPORT void lglsetunlockeq (LGL *, void (*unlock)(void*,int cons,int prod), void *);
 
-void lglsetmsglock (LGL *, void (*lock)(void*), void (*unlock)(void*), void*);
-void lglsetime (LGL *, double (*time)(void));
+EXPORT void lglsetmsglock (LGL *, void (*lock)(void*), void (*unlock)(void*), void*);
+EXPORT void lglsetime (LGL *, double (*time)(void));
 
 #endif

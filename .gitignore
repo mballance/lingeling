@@ -6,3 +6,7 @@ lglmbt
 lingeling
 makefile
 plingeling
+*.obj
+*.dll
+*.lib
+*.exp
