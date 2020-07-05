@@ -1,0 +1,4 @@
+
+#define LGL_CC "@LGL_CC@"
+#define LGL_CFLAGS "@LGL_CFLAGS@"
+

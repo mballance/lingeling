@@ -1,0 +1,7 @@
+
+#define LGL_OS       "@LGL_OS@"
+#define LGL_COMPILED "@LGL_DATE@"
+#define LGL_RELEASED "@LGL_DATE@"
+#define LGL_VERSION  "@LGL_VERSION@"
+#define LGL_ID       "@LGL_ID@"
+
